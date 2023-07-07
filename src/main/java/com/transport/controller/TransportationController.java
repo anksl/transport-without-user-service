@@ -3,7 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.TransportationDto;
 import com.transport.service.TransportationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +32,7 @@ public class TransportationController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<TransportationDto> list = transportationService.getTransportations(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/{transportationId}")
@@ -48,7 +47,7 @@ public class TransportationController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<TransportationDto> list = transportationService.getTransportationsForCurrentUser(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/period")
@@ -60,7 +59,7 @@ public class TransportationController {
             @RequestParam Date endDate) {
         List<TransportationDto> list = transportationService.findTransportationsForPeriod(pageNo, pageSize, sortBy, startDate, endDate);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping
@@ -86,7 +85,7 @@ public class TransportationController {
             @RequestParam Date endDate) {
         Short income = transportationService.findIncomeForPeriod(startDate, endDate);
 
-        return new ResponseEntity<>(income, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 
     @GetMapping("/fuelCost")
@@ -95,7 +94,7 @@ public class TransportationController {
             @RequestParam Date endDate) {
         Short income = transportationService.findFuelCostForPeriod(startDate, endDate);
 
-        return new ResponseEntity<>(income, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 
     @GetMapping("/fuelConsumption")
@@ -104,7 +103,7 @@ public class TransportationController {
             @RequestParam Date endDate) {
         Short income = transportationService.findFuelConsumptionForPeriod(startDate, endDate);
 
-        return new ResponseEntity<>(income, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 
     @GetMapping("/distance")
@@ -113,6 +112,6 @@ public class TransportationController {
             @RequestParam Date endDate) {
         Short income = transportationService.findDistanceForPeriod(startDate, endDate);
 
-        return new ResponseEntity<>(income, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(income, HttpStatus.OK);
     }
 }

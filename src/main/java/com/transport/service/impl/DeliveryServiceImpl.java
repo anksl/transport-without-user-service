@@ -40,22 +40,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     public List<DeliveryDto> getDeliveries(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Delivery> pagedResult = deliveryRepository.findAll(paging);
-        if (pagedResult.hasContent()) {
-            return deliveryMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? deliveryMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public List<DeliveryDto> getDeliveriesByDate(Integer pageNo, Integer pageSize, String sortBy, Date date) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Delivery> pagedResult = deliveryRepository.findByDate(date, paging);
-        if (pagedResult.hasContent()) {
-            return deliveryMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? deliveryMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override

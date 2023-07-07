@@ -32,33 +32,21 @@ public class AddressServiceImpl implements AddressService {
     public List<AddressDto> getAddresses(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Address> pagedResult = addressRepository.findAll(paging);
-        if (pagedResult.hasContent()) {
-            return addressMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? addressMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public List<AddressDto> getAddressesByCountry(Integer pageNo, Integer pageSize, String sortBy, String countryName) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Address> pagedResult = addressRepository.findByCity_Country_Name(countryName, paging);
-        if (pagedResult.hasContent()) {
-            return addressMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? addressMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public List<AddressDto> getAddressesByCity(Integer pageNo, Integer pageSize, String sortBy, String cityName) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Address> pagedResult = addressRepository.findByCityName(cityName, paging);
-        if (pagedResult.hasContent()) {
-            return addressMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? addressMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override

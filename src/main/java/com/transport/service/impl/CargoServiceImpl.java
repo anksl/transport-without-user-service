@@ -31,22 +31,14 @@ public class CargoServiceImpl implements CargoService {
     public List<CargoDto> getCargos(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Cargo> pagedResult = cargoRepository.findAll(paging);
-        if (pagedResult.hasContent()) {
-            return cargoMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? cargoMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public List<CargoDto> getCargosByName(Integer pageNo, Integer pageSize, String sortBy, String name) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Cargo> pagedResult = cargoRepository.findByName(name, paging);
-        if (pagedResult.hasContent()) {
-            return cargoMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? cargoMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override

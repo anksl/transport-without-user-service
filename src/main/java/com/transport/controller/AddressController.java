@@ -3,7 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.AddressDto;
 import com.transport.service.AddressService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +30,7 @@ public class AddressController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy) {
         List<AddressDto> list = addressService.getAddresses(pageNo, pageSize, sortBy);
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/find/country")
@@ -41,7 +40,7 @@ public class AddressController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam String name) {
         List<AddressDto> list = addressService.getAddressesByCountry(pageNo, pageSize, sortBy, name);
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/find/city")
@@ -51,7 +50,7 @@ public class AddressController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam String name) {
         List<AddressDto> list = addressService.getAddressesByCity(pageNo, pageSize, sortBy, name);
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

@@ -3,7 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.DeliveryDto;
 import com.transport.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +32,7 @@ public class DeliveryController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<DeliveryDto> list = deliveryService.getDeliveries(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/find")
@@ -44,7 +43,7 @@ public class DeliveryController {
             @RequestParam(defaultValue = "Date.valueOf(LocalDate.now())") Date date) {
         List<DeliveryDto> list = deliveryService.getDeliveriesByDate(pageNo, pageSize, sortBy, date);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.transport.model.enums.PaymentStatus.OWE;
+
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -51,11 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
     public List<PaymentDto> getPayments(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Payment> pagedResult = paymentRepository.findAll(paging);
-        if (pagedResult.hasContent()) {
-            return paymentMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? paymentMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
@@ -63,28 +61,20 @@ public class PaymentServiceImpl implements PaymentService {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         UserDto user = usersServiceClient.getCurrentUser();
         Page<Payment> pagedResult = paymentRepository.findByUser(userMapper.convert(user), paging);
-        if (pagedResult.hasContent()) {
-            return paymentMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? paymentMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public List<PaymentDto> findByPriceGreaterThan(BigDecimal price, Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Payment> pagedResult = paymentRepository.findByPriceGreaterThan(price, paging);
-        if (pagedResult.hasContent()) {
-            return paymentMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? paymentMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
     public Email remindDebtors() {
         Email email = new Email();
-        String[] recipients = paymentRepository.findByPaymentStatusOWE().stream().map(User::getEmail).toArray(String[]::new);
+        String[] recipients = paymentRepository.findByPaymentStatus(OWE).stream().map(User::getEmail).toArray(String[]::new);
         email.setRecipients(recipients);
         email.setSubject("Transport.com");
         email.setMsgBody("Reminder about the presence of unpaid transportations!");
@@ -94,7 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void setPaymentStatus(Payment payment) {
         if (payment.getDate() == null) {
-            payment.setPaymentStatus(PaymentStatus.OWE);
+            payment.setPaymentStatus(OWE);
         } else if (payment.getDeadline().after(payment.getDate())) {
             payment.setPaymentStatus(PaymentStatus.ON_TIME);
         } else {

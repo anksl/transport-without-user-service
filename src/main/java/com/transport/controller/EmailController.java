@@ -32,13 +32,13 @@ public class EmailController {
         emailService.sendMailWithAttachment(details);
     }
 
-    @Scheduled(cron = "0 0 0 10 * ?")
+    @Scheduled(cron = "${com.transport.cron.customer-reminder}")
     @PostMapping("/sendCustomerReminder")
     public void sendReminder() {
         emailService.sendSimpleMail(paymentService.remindDebtors());
     }
 
-    @Scheduled(cron = "0 0 0 20 * ?")
+    @Scheduled(cron = "${com.transport.cron.report}")
     @PostMapping("/sendReport")
     public void sendReport() {
         emailService.sendSimpleMail(transportationService.createReport());

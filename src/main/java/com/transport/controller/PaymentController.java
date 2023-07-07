@@ -3,7 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.PaymentDto;
 import com.transport.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +30,7 @@ public class PaymentController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<PaymentDto> list = paymentService.getPayments(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/find")
@@ -42,7 +41,7 @@ public class PaymentController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<PaymentDto> list = paymentService.findByPriceGreaterThan(price, pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/current")
@@ -52,7 +51,7 @@ public class PaymentController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<PaymentDto> list = paymentService.getForCurrentUser(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

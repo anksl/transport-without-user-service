@@ -14,6 +14,7 @@ import com.transport.repository.TransportationRepository;
 import com.transport.service.PaymentService;
 import com.transport.service.TransportationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import static com.transport.api.utils.TransportConstants.FUEL_CONSUMPTION;
 import static com.transport.api.utils.TransportConstants.FUEL_COST;
 import static com.transport.api.utils.TransportConstants.TAX;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -46,11 +48,7 @@ public class TransportationServiceImpl implements TransportationService {
     public List<TransportationDto> getTransportations(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         Page<Transportation> pagedResult = transportationRepository.findAll(paging);
-        if (pagedResult.hasContent()) {
-            return transportationMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? transportationMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
@@ -58,11 +56,7 @@ public class TransportationServiceImpl implements TransportationService {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         UserDto user = usersServiceClient.getCurrentUser();
         Page<Transportation> pagedResult = transportationRepository.findByUser(userMapper.convert(user), paging);
-        if (pagedResult.hasContent()) {
-            return transportationMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? transportationMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
@@ -70,11 +64,7 @@ public class TransportationServiceImpl implements TransportationService {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
         UserDto user = usersServiceClient.getCurrentUser();
         Page<Transportation> pagedResult = transportationRepository.findByPeriod(userMapper.convert(user), startDate, endDate, paging);
-        if (pagedResult.hasContent()) {
-            return transportationMapper.convert(pagedResult.getContent());
-        } else {
-            return new ArrayList<>();
-        }
+        return pagedResult.hasContent() ? transportationMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
 
     @Override
@@ -175,8 +165,10 @@ public class TransportationServiceImpl implements TransportationService {
                 .mapToInt(transportation -> countFuelConsumption(transportation.getDistance()))
                 .sum();
     }
+
     //liters
     private short countFuelConsumption(short distance) {
+        log.warn(String.valueOf(FUEL_CONSUMPTION));
         return (short) (distance / FUEL_CONSUMPTION);
     }
 

@@ -3,7 +3,6 @@ package com.transport.controller;
 import com.transport.api.dto.CargoDto;
 import com.transport.service.CargoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +31,7 @@ public class CargoController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<CargoDto> list = cargoService.getCargos(pageNo, pageSize, sortBy);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/find")
@@ -43,7 +42,7 @@ public class CargoController {
             @RequestParam String name) {
         List<CargoDto> list = cargoService.getCargosByName(pageNo, pageSize, sortBy, name);
 
-        return new ResponseEntity<>(list, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
