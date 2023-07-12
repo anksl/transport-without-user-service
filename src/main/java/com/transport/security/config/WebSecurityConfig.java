@@ -50,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/cargos/**").hasRole("CUSTOMER")
                 .antMatchers(HttpMethod.PUT, "/api/cargos/**").hasRole("CUSTOMER")
                 .antMatchers(HttpMethod.DELETE, "/api/cargos/**").hasRole("CUSTOMER")
-                .antMatchers(HttpMethod.GET, "/api/cargos/**", "/api/payments/current").hasRole("CUSTOMER")
+                .antMatchers(HttpMethod.GET, "/api/cargos/**", "/api/payments/current", "/api/messages/debtors").hasRole("CUSTOMER")
                 .antMatchers(HttpMethod.GET, TRANSPORTER_ENDPOINTS).hasRole("TRANSPORTER")
                 .antMatchers(HttpMethod.POST, "/api/emails/sendReport").hasRole("TRANSPORTER")
                 .antMatchers("/api/users/**", "/api/emails/sendCustomerReminder").hasRole("ADMIN")

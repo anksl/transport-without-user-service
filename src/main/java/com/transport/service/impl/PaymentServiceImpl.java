@@ -2,11 +2,11 @@ package com.transport.service.impl;
 
 import com.transport.api.dto.PaymentDto;
 import com.transport.api.dto.UserDto;
+import com.transport.api.dto.jms.DebtorsMessageDto;
 import com.transport.api.exception.NoSuchEntityException;
 import com.transport.api.mapper.PaymentMapper;
 import com.transport.api.mapper.UserMapper;
-import com.transport.feign.UsersServiceClient;
-import com.transport.model.Email;
+import com.transport.config.feign.UsersServiceClient;
 import com.transport.model.Payment;
 import com.transport.model.User;
 import com.transport.model.enums.PaymentStatus;
@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.transport.model.enums.PaymentStatus.OWE;
 
@@ -72,13 +73,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Email remindDebtors() {
-        Email email = new Email();
-        String[] recipients = paymentRepository.findByPaymentStatus(OWE).stream().map(User::getEmail).toArray(String[]::new);
-        email.setRecipients(recipients);
-        email.setSubject("Transport.com");
-        email.setMsgBody("Reminder about the presence of unpaid transportations!");
-        return email;
+    public DebtorsMessageDto findDebtors() {
+        String userEmail = usersServiceClient.getCurrentUser().getEmail();
+        List<String> recipients = paymentRepository.findByPaymentStatusOWE().stream().map(User::getEmail).collect(Collectors.toList());
+        return new DebtorsMessageDto(userEmail, recipients);
     }
 
     @Override

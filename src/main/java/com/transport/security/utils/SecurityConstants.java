@@ -15,6 +15,7 @@ public class SecurityConstants {
                     "/api/transportations/income",
                     "/api/transportations/fuelCost",
                     "/api/transportations/fuelConsumption",
-                    "/api/transportations/distance"
+                    "/api/transportations/distance",
+                    "/api/messages/createReport"
             };
 }
