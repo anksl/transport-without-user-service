@@ -125,16 +125,24 @@ public class TransportationServiceImpl implements TransportationService {
 
     @Override
     public TransporterReportDto createReport() {
+        TransporterReportDto transporterReportDto = new TransporterReportDto();
         String userEmail = usersServiceClient.getCurrentUser().getEmail();
         Date startDate = Date.valueOf(LocalDate.now().minusMonths(1));
         Date endDate = Date.valueOf(LocalDate.now());
-        String report = "Report for period: " + LocalDate.now().minusMonths(1) + " - " + LocalDate.now() + '\n' +
-                "Amount of transportations: " + findTransportationsForPeriod(startDate, endDate).size() + '\n' +
-                "Distance: " + findDistanceForPeriod(startDate, endDate) + '\n' +
-                "Fuel consumption: " + findFuelConsumptionForPeriod(startDate, endDate) + '\n' +
-                "Spent on fuel: " + findFuelCostForPeriod(startDate, endDate) + "€" + '\n' +
-                "Total income: " + findIncomeForPeriod(startDate, endDate) + "€" + '\n';
-        return new TransporterReportDto(userEmail, report);
+        Integer amountOfTransportations = findTransportationsForPeriod(startDate, endDate).size();
+        Short distance = findDistanceForPeriod(startDate, endDate);
+        Short fuelConsumption = findFuelConsumptionForPeriod(startDate, endDate);
+        Short fuelCost = findFuelCostForPeriod(startDate, endDate);
+        Short income = findIncomeForPeriod(startDate, endDate);
+        transporterReportDto.setUserEmail(userEmail);
+        transporterReportDto.setStartDate(startDate);
+        transporterReportDto.setEndDate(endDate);
+        transporterReportDto.setAmountOfTransportations(amountOfTransportations);
+        transporterReportDto.setDistance(distance);
+        transporterReportDto.setFuelConsumption(fuelConsumption);
+        transporterReportDto.setFuelCost(fuelCost);
+        transporterReportDto.setIncome(income);
+        return transporterReportDto;
 
     }
 

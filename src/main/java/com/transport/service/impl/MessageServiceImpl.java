@@ -17,7 +17,11 @@ public class MessageServiceImpl implements MessageService {
     private final PaymentService paymentService;
     private final TransportationService transportationService;
 
-    public MessageServiceImpl(@Qualifier("paymentQueue") Queue paymentQueue, @Qualifier("transportationQueue") Queue transportationQueue, JmsTemplate jmsTemplate, PaymentService paymentService, TransportationService transportationService) {
+    public MessageServiceImpl(@Qualifier("paymentQueue") Queue paymentQueue,
+                              @Qualifier("transportationQueue") Queue transportationQueue,
+                              JmsTemplate jmsTemplate,
+                              PaymentService paymentService,
+                              TransportationService transportationService) {
         this.paymentQueue = paymentQueue;
         this.transportationQueue = transportationQueue;
         this.jmsTemplate = jmsTemplate;
