@@ -2,11 +2,11 @@ package com.transport.service.impl;
 
 import com.transport.api.dto.TransportationDto;
 import com.transport.api.dto.UserDto;
+import com.transport.api.dto.jms.TransporterReportDto;
 import com.transport.api.exception.NoSuchEntityException;
 import com.transport.api.mapper.TransportationMapper;
 import com.transport.api.mapper.UserMapper;
-import com.transport.feign.UsersServiceClient;
-import com.transport.model.Email;
+import com.transport.config.feign.UsersServiceClient;
 import com.transport.model.Payment;
 import com.transport.model.Transportation;
 import com.transport.repository.PaymentRepository;
@@ -124,22 +124,26 @@ public class TransportationServiceImpl implements TransportationService {
     }
 
     @Override
-    public Email createReport() {
-        UserDto user = usersServiceClient.getCurrentUser();
-        Email email = new Email();
+    public TransporterReportDto createReport() {
+        TransporterReportDto transporterReportDto = new TransporterReportDto();
+        String userEmail = usersServiceClient.getCurrentUser().getEmail();
         Date startDate = Date.valueOf(LocalDate.now().minusMonths(1));
         Date endDate = Date.valueOf(LocalDate.now());
-        String body =
-                "Report for period: " + LocalDate.now().minusMonths(1) + " - " + LocalDate.now() + '\n' +
-                        "Amount of transportations: " + findTransportationsForPeriod(startDate, endDate).size() + '\n' +
-                        "Distance: " + findDistanceForPeriod(startDate, endDate) + '\n' +
-                        "Fuel consumption: " + findFuelConsumptionForPeriod(startDate, endDate) + '\n' +
-                        "Spent on fuel: " + findFuelCostForPeriod(startDate, endDate) + "€" + '\n' +
-                        "Total income: " + findIncomeForPeriod(startDate, endDate) + "€" + '\n';
-        email.setRecipients(new String[]{user.getEmail()});
-        email.setSubject("Transport.com");
-        email.setMsgBody(body);
-        return email;
+        Integer amountOfTransportations = findTransportationsForPeriod(startDate, endDate).size();
+        Short distance = findDistanceForPeriod(startDate, endDate);
+        Short fuelConsumption = findFuelConsumptionForPeriod(startDate, endDate);
+        Short fuelCost = findFuelCostForPeriod(startDate, endDate);
+        Short income = findIncomeForPeriod(startDate, endDate);
+        transporterReportDto.setUserEmail(userEmail);
+        transporterReportDto.setStartDate(startDate);
+        transporterReportDto.setEndDate(endDate);
+        transporterReportDto.setAmountOfTransportations(amountOfTransportations);
+        transporterReportDto.setDistance(distance);
+        transporterReportDto.setFuelConsumption(fuelConsumption);
+        transporterReportDto.setFuelCost(fuelCost);
+        transporterReportDto.setIncome(income);
+        return transporterReportDto;
+
     }
 
     @Override

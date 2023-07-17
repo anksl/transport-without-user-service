@@ -1,4 +1,4 @@
-package com.transport.feign;
+package com.transport.config.feign;
 
 import com.transport.api.dto.UserDto;
 import feign.Headers;

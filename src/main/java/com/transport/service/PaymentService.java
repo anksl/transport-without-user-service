@@ -1,7 +1,7 @@
 package com.transport.service;
 
 import com.transport.api.dto.PaymentDto;
-import com.transport.model.Email;
+import com.transport.api.dto.jms.DebtorsMessageDto;
 import com.transport.model.Payment;
 
 import java.math.BigDecimal;
@@ -19,5 +19,5 @@ public interface PaymentService {
 
     void setPaymentStatus(Payment payment);
 
-    Email remindDebtors();
+    DebtorsMessageDto findDebtors();
 }

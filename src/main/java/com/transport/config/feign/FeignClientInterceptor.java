@@ -1,8 +1,7 @@
-package com.transport.feign;
+package com.transport.config.feign;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -13,7 +12,6 @@ import static com.transport.security.utils.SecurityConstants.AUTHORIZATION;
 
 
 @Configuration
-@RequiredArgsConstructor
 public class FeignClientInterceptor implements RequestInterceptor {
 
     @Override

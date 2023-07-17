@@ -1,7 +1,7 @@
 package com.transport.service;
 
 import com.transport.api.dto.TransportationDto;
-import com.transport.model.Email;
+import com.transport.api.dto.jms.TransporterReportDto;
 
 import java.sql.Date;
 import java.util.List;
@@ -29,5 +29,5 @@ public interface TransportationService {
 
     short findDistanceForPeriod(Date startDate, Date endDate);
 
-    Email createReport();
+    TransporterReportDto createReport();
 }
