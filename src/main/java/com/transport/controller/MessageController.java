@@ -15,12 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
     private final MessageService messageService;
 
-    @Scheduled(cron = "${com.transport.cron.customer-reminder}")
-    @GetMapping("/debtors")
-    public void findDebtors() {
-        messageService.findDebtors();
-    }
-
     @Scheduled(cron = "${com.transport.cron.report}")
     @GetMapping("/createReport")
     public void createReport() {

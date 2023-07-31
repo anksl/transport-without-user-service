@@ -4,14 +4,14 @@ import com.transport.api.dto.TransportationDto;
 import com.transport.api.dto.UserDto;
 import com.transport.api.dto.jms.TransporterReportDto;
 import com.transport.api.exception.NoSuchEntityException;
+import com.transport.api.mapper.PaymentMapper;
 import com.transport.api.mapper.TransportationMapper;
 import com.transport.api.mapper.UserMapper;
-import com.transport.config.feign.UsersServiceClient;
+import com.transport.config.feign.PaymentServiceClient;
+import com.transport.config.feign.UserServiceClient;
 import com.transport.model.Payment;
 import com.transport.model.Transportation;
-import com.transport.repository.PaymentRepository;
 import com.transport.repository.TransportationRepository;
-import com.transport.service.PaymentService;
 import com.transport.service.TransportationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +38,11 @@ import static com.transport.api.utils.TransportConstants.TAX;
 public class TransportationServiceImpl implements TransportationService {
 
     private final TransportationRepository transportationRepository;
-    private final PaymentRepository paymentRepository;
-    private final PaymentService paymentService;
     private final TransportationMapper transportationMapper;
+    private final UserServiceClient userServiceClient;
+    private final PaymentServiceClient paymentServiceClient;
     private final UserMapper userMapper;
-    private final UsersServiceClient usersServiceClient;
+    private final PaymentMapper paymentMapper;
 
     @Override
     public List<TransportationDto> getTransportations(Integer pageNo, Integer pageSize, String sortBy) {
@@ -54,7 +54,7 @@ public class TransportationServiceImpl implements TransportationService {
     @Override
     public List<TransportationDto> getTransportationsForCurrentUser(Integer pageNo, Integer pageSize, String sortBy) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        UserDto user = usersServiceClient.getCurrentUser();
+        UserDto user = userServiceClient.getCurrentUser();
         Page<Transportation> pagedResult = transportationRepository.findByUser(userMapper.convert(user), paging);
         return pagedResult.hasContent() ? transportationMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
@@ -62,7 +62,7 @@ public class TransportationServiceImpl implements TransportationService {
     @Override
     public List<TransportationDto> findTransportationsForPeriod(Integer pageNo, Integer pageSize, String sortBy, Date startDate, Date endDate) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
-        UserDto user = usersServiceClient.getCurrentUser();
+        UserDto user = userServiceClient.getCurrentUser();
         Page<Transportation> pagedResult = transportationRepository.findByPeriod(userMapper.convert(user), startDate, endDate, paging);
         return pagedResult.hasContent() ? transportationMapper.convert(pagedResult.getContent()) : new ArrayList<>();
     }
@@ -79,8 +79,7 @@ public class TransportationServiceImpl implements TransportationService {
     public void createTransportation(TransportationDto transportationDto) {
         Transportation transportation = transportationMapper.convert(transportationDto);
         Payment payment = transportation.getPayment();
-        paymentService.setPaymentStatus(payment);
-        paymentRepository.save(payment);
+        paymentServiceClient.savePayment(paymentMapper.convert(payment));
         transportationMapper.convert(transportationRepository.save(transportation));
     }
 
@@ -88,16 +87,15 @@ public class TransportationServiceImpl implements TransportationService {
     @Override
     public TransportationDto updateTransportation(Long id, TransportationDto newTransportationDto) {
         Transportation transportation = transportationRepository.findById(id).orElseThrow(() -> new NoSuchEntityException(String.format("Transportation with id: %s doesn't exist", id)));
-        Payment payment = paymentRepository.findById(newTransportationDto.getPayment().getId()).orElseThrow(() -> new IllegalArgumentException("No payment with id:" + transportation.getPayment().getId()));
+        Payment payment = paymentMapper.convert(paymentServiceClient.getPaymentById(transportation.getPayment().getId()));
         Transportation newTransportation = transportationMapper.convert(newTransportationDto);
         Payment newPayment = newTransportation.getPayment();
         payment.setPrice(newPayment.getPrice());
         payment.setDate(newPayment.getDate());
         payment.setDeadline(newPayment.getDeadline());
-        paymentService.setPaymentStatus(payment);
         payment.setUser(newPayment.getUser());
         transportation.setPayment(payment);
-        paymentRepository.save(payment);
+        paymentServiceClient.savePayment(paymentMapper.convert(payment));
         transportation.setDistance(newTransportation.getDistance());
         transportation.setUser(newTransportation.getUser());
         transportation.setCargo(newTransportation.getCargo());
@@ -113,20 +111,20 @@ public class TransportationServiceImpl implements TransportationService {
     }
 
     private List<TransportationDto> findTransportationsForPeriod(Date startDate, Date endDate) {
-        UserDto user = usersServiceClient.getCurrentUser();
+        UserDto user = userServiceClient.getCurrentUser();
         return transportationMapper.convert(transportationRepository.findByPeriod(userMapper.convert(user), startDate, endDate));
     }
 
     @Override
     public short findDistanceForPeriod(Date startDate, Date endDate) {
-        UserDto user = usersServiceClient.getCurrentUser();
+        UserDto user = userServiceClient.getCurrentUser();
         return transportationRepository.findDistanceByPeriod(userMapper.convert(user), startDate, endDate);
     }
 
     @Override
     public TransporterReportDto createReport() {
         TransporterReportDto transporterReportDto = new TransporterReportDto();
-        String userEmail = usersServiceClient.getCurrentUser().getEmail();
+        String userEmail = userServiceClient.getCurrentUser().getEmail();
         Date startDate = Date.valueOf(LocalDate.now().minusMonths(1));
         Date endDate = Date.valueOf(LocalDate.now());
         Integer amountOfTransportations = findTransportationsForPeriod(startDate, endDate).size();
@@ -184,5 +182,4 @@ public class TransportationServiceImpl implements TransportationService {
     private short countIncomeForTransportation(TransportationDto transportation) {
         return (short) (transportation.getPayment().getPrice().shortValue() - countFuelCost(transportation.getDistance()) - transportation.getPayment().getPrice().multiply(TAX).shortValue());
     }
-
 }

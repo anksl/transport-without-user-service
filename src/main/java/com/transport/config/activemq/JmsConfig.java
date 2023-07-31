@@ -17,16 +17,8 @@ import javax.jms.Queue;
 @Configuration
 public class JmsConfig {
 
-    @Value("${com.transport.payment-queue}")
-    private String paymentQueueName;
-
     @Value("${com.transport.transportation-queue}")
     private String transportationQueueName;
-
-    @Bean
-    public Queue paymentQueue() {
-        return new ActiveMQQueue(paymentQueueName);
-    }
 
     @Bean
     public Queue transportationQueue() {
